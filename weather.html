@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>跨域请求天气</title>
+	<script src="../libs/angular.min.js"></script>
+	<script>
+		var Weather = angular.module('Weather', []);
+		// 向服务请求数据展示到视图上
+		// $http、$scope
+		Weather.controller('WeatherCtrl', ['$http', '$scope', function ($http, $scope) {
+
+			$scope.check = function () {
+
+				$http({
+					url: 'http://api.map.baidu.com/telematics/v3/weather',
+					method: 'jsonp',
+					params: {
+						location: $scope.location,
+						output: 'json',
+						ak: '0A5bc3c4fb543c8f9bc54b77bc155724',
+						callback: 'JSON_CALLBACK'
+					}
+				}).success(function (info) {
+					console.log(info);
+					// 将从服务器获取数据放到模型上
+					$scope.weatherData = info.results[0]['weather_data'];
+				});
+			}
+
+		}]);
+	</script>
+</head>
+<body ng-App="Weather">
+	<div ng-controller="WeatherCtrl">
+		<input type="text" ng-model="location">
+		<button ng-click="check()">查询</button>
+		<table>
+			<tr ng-repeat="weather in weatherData">
+				<td>{{weather.date}}</td>
+				<td>{{weather.temperature}}</td>
+				<td>{{weather.weather}}</td>
+				<td>{{weather.wind}}</td>
+				<td><img ng-src="{{weather.dayPictureUrl}}" alt=""></td>
+				<td><img ng-src="{{weather.nightPictureUrl}}" alt=""></td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>
